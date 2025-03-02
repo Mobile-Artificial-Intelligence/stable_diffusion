@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:stable_diffusion/stable_diffusion.dart' as stable_diffusion;
+import 'package:sdcpp/sdcpp.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,13 +17,6 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   late int sumResult;
   late Future<int> sumAsyncResult;
-
-  @override
-  void initState() {
-    super.initState();
-    sumResult = stable_diffusion.sum(1, 2);
-    sumAsyncResult = stable_diffusion.sumAsync(3, 4);
-  }
 
   @override
   Widget build(BuildContext context) {

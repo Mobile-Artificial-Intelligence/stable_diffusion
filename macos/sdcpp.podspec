@@ -12,6 +12,9 @@ A new Flutter FFI plugin project.
   s.homepage         = 'https://github.com/Mobile-Artificial-Intelligence/sdcpp'
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Your Company' => 'email@example.com' }
+  s.dependency 'FlutterMacOS'
+  s.swift_version = '5.0'
+
 
   s.prepare_command = <<-CMD
     set -e
@@ -40,29 +43,17 @@ A new Flutter FFI plugin project.
     echo "Copy completed successfully."
   CMD
 
-  # This will ensure the source files in Classes/ are included in the native
-  # builds of apps using this FFI plugin. Podspec does not support relative
-  # paths, so Classes contains a forwarder C file that relatively imports
-  # `../src/*` so that the C sources can be shared among all target platforms.
   s.source           = { :path => '.' }
   s.source_files = 'stable_diffusion/*.cpp',
-                   'stable_diffusion/thirdparty/*.cpp',
+                   'stable_diffusion/thirdparty/*.c',
                    'stable_diffusion/ggml/src/*.c',
                    'stable_diffusion/ggml/src/*.cpp',
                    'stable_diffusion/ggml/src/ggml-cpu/*.c',
                    'stable_diffusion/ggml/src/ggml-cpu/*.cpp',
                    'stable_diffusion/ggml/src/ggml-metal/*.m',
 
-  # If your plugin requires a privacy manifest, for example if it collects user
-  # data, update the PrivacyInfo.xcprivacy file to describe your plugin's
-  # privacy impact, and then uncomment this line. For more information,
-  # see https://developer.apple.com/documentation/bundleresources/privacy_manifest_files
-  # s.resource_bundles = {'sdcpp_privacy' => ['Resources/PrivacyInfo.xcprivacy']}
-
-  s.dependency 'FlutterMacOS'
-
   s.frameworks = 'Foundation', 'Metal', 'MetalKit'
-  s.platform = :osx, '10.11'
+  s.platform = :osx, '10.15'
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
     'USER_HEADER_SEARCH_PATHS' => [
@@ -85,5 +76,4 @@ A new Flutter FFI plugin project.
     'OTHER_CPLUSPLUSFLAGS' => ['$(inherited)', '-O3', '-flto', '-fno-objc-arc', '-w', '-std=c++17', '-fpermissive', '-I$(PODS_TARGET_SRCROOT)/stable_diffusion', '-I$(PODS_TARGET_SRCROOT)/stable_diffusion/ggml/include', '-DGGML_LLAMAFILE=OFF', '-DGGML_USE_CPU'],
     'GCC_PREPROCESSOR_DEFINITIONS' => ['$(inherited)', 'GGML_USE_METAL=1'],
   }
-  s.swift_version = '5.0'
 end
