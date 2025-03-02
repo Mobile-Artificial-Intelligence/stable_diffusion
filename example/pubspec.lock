@@ -147,6 +147,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
+  sdcpp:
+    dependency: "direct main"
+    description:
+      path: ".."
+      relative: true
+    source: path
+    version: "0.0.0"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -160,13 +167,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.10.1"
-  stable_diffusion:
-    dependency: "direct main"
-    description:
-      path: ".."
-      relative: true
-    source: path
-    version: "0.0.1"
   stack_trace:
     dependency: transitive
     description:

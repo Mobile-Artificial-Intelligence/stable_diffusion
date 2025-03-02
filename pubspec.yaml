@@ -19,10 +19,17 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^5.0.0
 
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
+ffigen:
+  name: 'stable_diffusion'
+  description: 'stable-diffusion.cpp binding'
+  output: 'lib/src/bindings.dart'
+  ignore-source-errors: true
+  headers:
+    entry-points:
+      - 'src/stable_diffusion/stable-diffusion.h'
+  compiler-opts:
+    - '-I/usr/lib/clang/17/include'
 
-# The following section is specific to Flutter packages.
 flutter:
   plugin:
     platforms:
