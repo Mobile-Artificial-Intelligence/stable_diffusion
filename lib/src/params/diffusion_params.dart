@@ -188,5 +188,7 @@ class DiffusionParams extends ChangeNotifier{
         _skipLayers = skipLayers ?? [7, 8, 9],
         _slgScale = slgScale,
         _skipLayerStart = skipLayerStart,
-        _skipLayerEnd = skipLayerEnd;
+        _skipLayerEnd = skipLayerEnd {
+        assert(inputIdImages.existsSync(), StableDiffusionException('Input ID images file does not exist'));
+    }
 }
