@@ -12,20 +12,26 @@ class StableDiffusionNative {
   ContextParams get contextParams => _contextParams;
 
   set contextParams(ContextParams value) {
-    if (_context != ffi.nullptr) {
-      StableDiffusion.lib.free_sd_ctx(_context);
-    }
+    _contextParams = value;
 
-    _context = value.toNative();
-    assert(_context != ffi.nullptr, StableDiffusionException('Failed to create context'));
-
-    _contextFinalizer.attach(this, _context);
+    _initContext();
   }
 
   StableDiffusionNative(
     ContextParams contextParams, 
     this.diffusionParams
-  ) { 
-    contextParams = contextParams;
+  ) : _contextParams = contextParams{ 
+    _initContext();
+  }
+
+  void _initContext() {
+    if (_context != ffi.nullptr) {
+      StableDiffusion.lib.free_sd_ctx(_context);
+    }
+
+    _context = _contextParams.toNative();
+    assert(_context != ffi.nullptr, StableDiffusionException('Failed to create context'));
+
+    _contextFinalizer.attach(this, _context);
   }
 }
