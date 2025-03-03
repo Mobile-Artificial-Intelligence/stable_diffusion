@@ -1,6 +1,6 @@
 part of 'package:sdcpp/sdcpp.dart';
 
-class DiffusionParams extends ChangeNotifier{
+class DiffusionParams extends ChangeNotifier {
     int _clipSkip;
 
     int get clipSkip => _clipSkip;
@@ -109,15 +109,6 @@ class DiffusionParams extends ChangeNotifier{
         notifyListeners();
     }
 
-    File _inputIdImages;
-
-    File get inputIdImages => _inputIdImages;
-
-    set inputIdImages(File value){
-        _inputIdImages = value;
-        notifyListeners();
-    }
-
     List<int> _skipLayers;
 
     List<int> get skipLayers => _skipLayers;
@@ -167,7 +158,6 @@ class DiffusionParams extends ChangeNotifier{
         int nBatch = 1,
         double controlStrength = 0.9,
         double styleRatio = 20.0,
-        required File inputIdImages,
         List<int>? skipLayers,
         double slgScale = 0.0,
         double skipLayerStart = 0.01,
@@ -184,11 +174,8 @@ class DiffusionParams extends ChangeNotifier{
         _nBatch = nBatch,
         _controlStrength = controlStrength,
         _styleRatio = styleRatio,
-        _inputIdImages = inputIdImages,
         _skipLayers = skipLayers ?? [7, 8, 9],
         _slgScale = slgScale,
         _skipLayerStart = skipLayerStart,
-        _skipLayerEnd = skipLayerEnd {
-        assert(inputIdImages.existsSync(), StableDiffusionException('Input ID images file does not exist'));
-    }
+        _skipLayerEnd = skipLayerEnd;
 }

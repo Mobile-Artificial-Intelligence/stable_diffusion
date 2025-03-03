@@ -3,10 +3,15 @@ part of 'package:sdcpp/sdcpp.dart';
 class StableDiffusionNative {
   static final _contextFinalizer =
       Finalizer<ffi.Pointer<sd_ctx_t>>(StableDiffusion.lib.free_sd_ctx);
+  
+  late ContextParams _contextParams;
+  DiffusionParams diffusionParams;
 
   ffi.Pointer<sd_ctx_t> _context = ffi.nullptr;
 
-  void setContext(ContextParams value) {
+  ContextParams get contextParams => _contextParams;
+
+  set contextParams(ContextParams value) {
     if (_context != ffi.nullptr) {
       StableDiffusion.lib.free_sd_ctx(_context);
     }
@@ -17,7 +22,10 @@ class StableDiffusionNative {
     _contextFinalizer.attach(this, _context);
   }
 
-  StableDiffusionNative(ContextParams params) {
-    setContext(params);
+  StableDiffusionNative(
+    ContextParams contextParams, 
+    this.diffusionParams
+  ) { 
+    contextParams = contextParams;
   }
 }
