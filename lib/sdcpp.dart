@@ -10,6 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'src/bindings.dart';
 
 part 'src/stable_diffusion_exception.dart';
+part 'src/extensions/uint8list_extension.dart';
 part 'src/types/schedule_type.dart';
 part 'src/types/sample_method.dart';
 part 'src/stable_diffusion_native.dart';

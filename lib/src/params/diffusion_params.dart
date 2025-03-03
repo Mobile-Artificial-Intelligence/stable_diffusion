@@ -12,30 +12,33 @@ class DiffusionParams extends ChangeNotifier{
     int seed;
     int nBatch;
     double controlStrength;
+    double styleStrength;
+    bool normalizeInput;
     double styleRatio;
-    File inputIdImages;
-    List<int> skipLayers;
+    Uint8List skipLayers;
     double slgScale;
     double skipLayerStart;
     double skipLayerEnd;
 
     DiffusionParams({
-        required this.clipSkip,
-        required this.cfgScale,
-        required this.guidance,
-        required this.eta,
-        required this.width,
-        required this.height,
-        required this.sampleMethod,
-        required this.samplingSteps,
-        required this.seed,
-        required this.nBatch,
-        required this.controlStrength,
-        required this.styleRatio,
-        required this.inputIdImages,
-        required this.skipLayers,
-        required this.slgScale,
-        required this.skipLayerStart,
-        required this.skipLayerEnd
-    });
+      this.clipSkip = -1,
+      this.cfgScale = 7.0,
+      this.guidance = 3.5,
+      this.eta = 0.0,
+      this.width = 512,
+      this.height = 512,
+      this.sampleMethod = SampleMethod.eulerA,
+      this.samplingSteps = 20,
+      int? seed,
+      this.nBatch = 1,
+      this.controlStrength = 0.9,
+      this.styleStrength = 0.0,
+      this.normalizeInput = false,
+      this.styleRatio = 20.0,
+      Uint8List? skipLayers,
+      this.slgScale = 0.0,
+      this.skipLayerStart = 0.01,
+      this.skipLayerEnd = 0.2
+    }) : seed = seed ?? math.Random().nextInt(1000000), 
+         skipLayers = skipLayers ?? Uint8List.fromList([7, 8, 9]);
 }

@@ -34,4 +34,36 @@ class StableDiffusionNative {
 
     _contextFinalizer.attach(this, _context);
   }
+
+  List<File> txt2img(String prompt, [String? negativePrompt]) {
+    ffi.Pointer<sd_image_t> controlImage = ffi.nullptr;
+
+    final results = StableDiffusion.lib.txt2img(
+      _context, 
+      prompt.toNativeUtf8().cast<ffi.Char>(), 
+      negativePrompt?.toNativeUtf8().cast<ffi.Char>() ?? ffi.nullptr, 
+      diffusionParams.clipSkip,
+      diffusionParams.cfgScale, 
+      diffusionParams.guidance, 
+      diffusionParams.eta, 
+      diffusionParams.width, 
+      diffusionParams.height, 
+      diffusionParams.sampleMethod.toNative(), 
+      diffusionParams.samplingSteps,
+      diffusionParams.seed,
+      diffusionParams.nBatch,
+      controlImage,
+      diffusionParams.controlStrength,
+      diffusionParams.styleStrength,
+      diffusionParams.normalizeInput,
+      contextParams.inputIdImages.path.toNativeUtf8().cast<ffi.Char>(),
+      diffusionParams.skipLayers.toUint8Pointer(),
+      diffusionParams.skipLayers.length,
+      diffusionParams.slgScale,
+      diffusionParams.skipLayerStart,
+      diffusionParams.skipLayerEnd
+    );
+
+    return []; // TODO
+  }
 }
