@@ -249,7 +249,7 @@ class ContextParams extends ChangeNotifier{
     assert((_model != null && _model!.existsSync()) || (_diffusionModel != null && _diffusionModel!.existsSync()), StableDiffusionException('Model and diffusion model file does not exist'));
   }
 
-  ffi.Pointer<sd_ctx_t> toNative() => StableDiffusion.lib.new_sd_ctx(
+  ffi.Pointer<sd_ctx_t> toNative() => lib.new_sd_ctx(
     _model?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr, 
     _clipL?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr, 
     _clipG?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr, 

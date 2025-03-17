@@ -15,8 +15,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late int sumResult;
-  late Future<int> sumAsyncResult;
+  final TextEditingController controller = TextEditingController();
+  StableDiffusion? sd;
 
   @override
   Widget build(BuildContext context) {
