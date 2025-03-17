@@ -56,7 +56,7 @@ class StableDiffusionNative {
       diffusionParams.controlStrength,
       diffusionParams.styleStrength,
       diffusionParams.normalizeInput,
-      contextParams.inputIdImages.path.toNativeUtf8().cast<ffi.Char>(),
+      contextParams.inputIdImages?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr,
       diffusionParams.skipLayers.toUint8Pointer(),
       diffusionParams.skipLayers.length,
       diffusionParams.slgScale,

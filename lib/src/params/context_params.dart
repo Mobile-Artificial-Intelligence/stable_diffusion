@@ -1,122 +1,112 @@
 part of 'package:sdcpp/sdcpp.dart';
 
+final emptyStringPtr = ''.toNativeUtf8().cast<ffi.Char>();
+
 class ContextParams extends ChangeNotifier{
-  File _model;
+  File? _model;
 
-  File get model => _model;
+  File? get model => _model;
 
-  set model(File value) {
-    assert(value.existsSync(), StableDiffusionException('Model file does not exist'));
+  set model(File? value) {
     _model = value;
     notifyListeners();
   }
 
-  File _clipL;
+  File? _clipL;
 
-  File get clipL => _clipL;
+  File? get clipL => _clipL;
 
-  set clipL(File value) {
-    assert(value.existsSync(), StableDiffusionException('Clip L file does not exist'));
+  set clipL(File? value) {
     _clipL = value;
     notifyListeners();
   }
 
-  File _clipG;
+  File? _clipG;
 
-  File get clipG => _clipG;
+  File? get clipG => _clipG;
 
-  set clipG(File value) {
-    assert(value.existsSync(), StableDiffusionException('Clip G file does not exist'));
+  set clipG(File? value) {
     _clipG = value;
     notifyListeners();
   }
 
-  File _t5xxl;
+  File? _t5xxl;
 
-  File get t5xxl => _t5xxl;
+  File? get t5xxl => _t5xxl;
 
-  set t5xxl(File value) {
-    assert(value.existsSync(), StableDiffusionException('T5XXL file does not exist'));
+  set t5xxl(File? value) {
     _t5xxl = value;
     notifyListeners();
   }
 
-  File _diffusionModel;
+  File? _diffusionModel;
 
-  File get diffusionModel => _diffusionModel;
+  File? get diffusionModel => _diffusionModel;
 
-  set diffusionModel(File value) {
-    assert(value.existsSync(), StableDiffusionException('Diffusion model file does not exist'));
+  set diffusionModel(File? value) {
     _diffusionModel = value;
     notifyListeners();
   }
   
-  File _vae;
+  File? _vae;
 
-  File get vae => _vae;
+  File? get vae => _vae;
 
-  set vae(File value) {
-    assert(value.existsSync(), StableDiffusionException('VAE file does not exist'));
+  set vae(File? value) {
     _vae = value;
     notifyListeners();
   }
 
-  File _taesd;
+  File? _taesd;
 
-  File get taesd => _taesd;
+  File? get taesd => _taesd;
 
-  set taesd(File value) {
-    assert(value.existsSync(), StableDiffusionException('TAESD file does not exist'));
+  set taesd(File? value) {
     _taesd = value;
     notifyListeners();
   }
 
-  File _controlnet;
+  File? _controlnet;
 
-  File get controlnet => _controlnet;
+  File? get controlnet => _controlnet;
 
-  set controlnet(File value) {
-    assert(value.existsSync(), StableDiffusionException('Controlnet file does not exist'));
+  set controlnet(File? value) {
     _controlnet = value;
     notifyListeners();
   }
 
-  File _embeddings;
+  File? _embeddings;
 
-  File get embeddings => _embeddings;
+  File? get embeddings => _embeddings;
 
-  set embeddings(File value) {
-    assert(value.existsSync(), StableDiffusionException('Embeddings file does not exist'));
+  set embeddings(File? value) {
     _embeddings = value;
     notifyListeners();
   }
 
-  File _stackedIdEmbeddings;
+  File? _stackedIdEmbeddings;
 
-  File get stackedIdEmbeddings => _stackedIdEmbeddings;
+  File? get stackedIdEmbeddings => _stackedIdEmbeddings;
 
-  set stackedIdEmbeddings(File value) {
-    assert(value.existsSync(), StableDiffusionException('Stacked ID embeddings file does not exist'));
+  set stackedIdEmbeddings(File? value) {
     _stackedIdEmbeddings = value;
     notifyListeners();
   }
 
-  File _inputIdImages;
+  File? _inputIdImages;
 
-  File get inputIdImages => _inputIdImages;
+  File? get inputIdImages => _inputIdImages;
 
-  set inputIdImages(File value) {
-    assert(value.existsSync(), StableDiffusionException('Input ID images file does not exist'));
+  set inputIdImages(File? value) {
     _inputIdImages = value;
     notifyListeners();
   }
 
-  File _loraModel;
+  File? _loraModel;
 
-  File get loraModel => _loraModel;
+  File? get loraModel => _loraModel;
 
-  set loraModel(File value) {
-    assert(value.existsSync(), StableDiffusionException('Lora model file does not exist'));
+  set loraModel(File? value) {
     _loraModel = value;
     notifyListeners();
   }
@@ -212,28 +202,28 @@ class ContextParams extends ChangeNotifier{
   }
 
   ContextParams({
-    required File model,
-    required File clipL,
-    required File clipG,
-    required File t5xxl,
-    required File diffusionModel,
-    required File vae,
-    required File taesd,
-    required File controlnet,
-    required File embeddings,
-    required File stackedIdEmbeddings,
-    required File inputIdImages,
-    required File loraModel,
-    required bool vaeDecodeOnly,
-    required bool vaeTiling,
-    required bool freeParamsImmediately,
-    required int nThreads,
-    required StableDiffusionType wType,
-    required ScheduleType sType,
-    required bool keepClipOnCpu,
-    required bool keepControlNetCpu,
-    required bool keepVaeOnCpu,
-    required bool diffusionFlashAttn
+    File? model,
+    File? clipL,
+    File? clipG,
+    File? t5xxl,
+    File? diffusionModel,
+    File? vae,
+    File? taesd,
+    File? controlnet,
+    File? embeddings,
+    File? stackedIdEmbeddings,
+    File? inputIdImages,
+    File? loraModel,
+    bool vaeDecodeOnly = false,
+    bool vaeTiling = false,
+    bool freeParamsImmediately = false,
+    int nThreads = -1,
+    StableDiffusionType wType = StableDiffusionType.count,
+    ScheduleType sType = ScheduleType.defaultSchedule,
+    bool keepClipOnCpu = false,
+    bool keepControlNetCpu = false,
+    bool keepVaeOnCpu = false,
+    bool diffusionFlashAttn = false
   }) : _model = model,
        _clipL = clipL,
        _clipG = clipG,
@@ -256,32 +246,21 @@ class ContextParams extends ChangeNotifier{
        _keepControlNetCpu = keepControlNetCpu,
        _keepVaeOnCpu = keepVaeOnCpu,
        _diffusionFlashAttn = diffusionFlashAttn {
-    assert(_model.existsSync(), StableDiffusionException('Model file does not exist'));
-    assert(_clipL.existsSync(), StableDiffusionException('Clip L file does not exist'));
-    assert(_clipG.existsSync(), StableDiffusionException('Clip G file does not exist'));
-    assert(_t5xxl.existsSync(), StableDiffusionException('T5XXL file does not exist'));
-    assert(_diffusionModel.existsSync(), StableDiffusionException('Diffusion model file does not exist'));
-    assert(_vae.existsSync(), StableDiffusionException('VAE file does not exist'));
-    assert(_taesd.existsSync(), StableDiffusionException('TAESD file does not exist'));
-    assert(_controlnet.existsSync(), StableDiffusionException('Controlnet file does not exist'));
-    assert(_embeddings.existsSync(), StableDiffusionException('Embeddings file does not exist'));
-    assert(_stackedIdEmbeddings.existsSync(), StableDiffusionException('Stacked ID embeddings file does not exist'));
-    assert(_inputIdImages.existsSync(), StableDiffusionException('Input ID images file does not exist'));
-    assert(_loraModel.existsSync(), StableDiffusionException('Lora model file does not exist'));
+    assert((_model != null && _model!.existsSync()) || (_diffusionModel != null && _diffusionModel!.existsSync()), StableDiffusionException('Model and diffusion model file does not exist'));
   }
 
   ffi.Pointer<sd_ctx_t> toNative() => StableDiffusion.lib.new_sd_ctx(
-    _model.path.toNativeUtf8().cast<ffi.Char>(), 
-    _clipL.path.toNativeUtf8().cast<ffi.Char>(), 
-    _clipG.path.toNativeUtf8().cast<ffi.Char>(), 
-    _t5xxl.path.toNativeUtf8().cast<ffi.Char>(), 
-    _diffusionModel.path.toNativeUtf8().cast<ffi.Char>(),
-    _vae.path.toNativeUtf8().cast<ffi.Char>(),
-    _taesd.path.toNativeUtf8().cast<ffi.Char>(), 
-    _controlnet.path.toNativeUtf8().cast<ffi.Char>(), 
-    _loraModel.path.toNativeUtf8().cast<ffi.Char>(), 
-    _embeddings.path.toNativeUtf8().cast<ffi.Char>(), 
-    _stackedIdEmbeddings.path.toNativeUtf8().cast<ffi.Char>(), 
+    _model?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr, 
+    _clipL?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr, 
+    _clipG?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr, 
+    _t5xxl?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr, 
+    _diffusionModel?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr,
+    _vae?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr,
+    _taesd?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr, 
+    _controlnet?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr, 
+    _loraModel?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr, 
+    _embeddings?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr, 
+    _stackedIdEmbeddings?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr, 
     _vaeDecodeOnly, 
     _vaeTiling, 
     _freeParamsImmediately, 
