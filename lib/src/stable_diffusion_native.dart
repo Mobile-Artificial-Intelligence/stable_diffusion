@@ -56,8 +56,6 @@ class StableDiffusionNative {
     seed ??= math.Random().nextInt(1000000);
     skipLayers ??= Uint8List.fromList([7, 8, 9]);
 
-    ffi.Pointer<sd_image_t> controlImage = ffi.nullptr;
-
     final resultsPtr = StableDiffusion.lib.txt2img(
       _context, 
       prompt.toNativeUtf8().cast<ffi.Char>(), 
@@ -72,7 +70,7 @@ class StableDiffusionNative {
       samplingSteps,
       seed,
       nBatch,
-      controlImage,
+      ffi.nullptr, // Control Image
       controlStrength,
       styleStrength,
       normalizeInput,
