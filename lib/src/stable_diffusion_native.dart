@@ -4,8 +4,7 @@ class StableDiffusionNative {
   static final _contextFinalizer =
       Finalizer<ffi.Pointer<sd_ctx_t>>(StableDiffusion.lib.free_sd_ctx);
   
-  late ContextParams _contextParams;
-  DiffusionParams diffusionParams;
+  ContextParams _contextParams;
 
   ffi.Pointer<sd_ctx_t> _context = ffi.nullptr;
 
@@ -13,14 +12,11 @@ class StableDiffusionNative {
 
   set contextParams(ContextParams value) {
     _contextParams = value;
-
+    _contextParams.addListener(_initContext);
     _initContext();
   }
 
-  StableDiffusionNative(
-    ContextParams contextParams, 
-    this.diffusionParams
-  ) : _contextParams = contextParams{ 
+  StableDiffusionNative(ContextParams contextParams) : _contextParams = contextParams { 
     _initContext();
   }
 
@@ -35,38 +31,62 @@ class StableDiffusionNative {
     _contextFinalizer.attach(this, _context);
   }
 
-  List<Uint8List> txt2img(String prompt, [String? negativePrompt]) {
+  List<Uint8List> txt2img({
+    required String prompt, 
+    String? negativePrompt, 
+    int clipSkip = -1,
+    double cfgScale = 7.0,
+    double guidance = 3.5,
+    double eta = 0.0,
+    int width = 512,
+    int height = 512,
+    SampleMethod sampleMethod = SampleMethod.eulerA,
+    int samplingSteps = 20,
+    int? seed,
+    int nBatch = 1,
+    double controlStrength = 0.9,
+    double styleStrength = 0.0, 
+    bool normalizeInput = false,
+    double styleRatio = 20.0,
+    Uint8List? skipLayers,
+    double slgScale = 0.0,
+    double skipLayerStart = 0.01,
+    double skipLayerEnd = 0.2
+  }) {
+    seed ??= math.Random().nextInt(1000000);
+    skipLayers ??= Uint8List.fromList([7, 8, 9]);
+
     ffi.Pointer<sd_image_t> controlImage = ffi.nullptr;
 
     final resultsPtr = StableDiffusion.lib.txt2img(
       _context, 
       prompt.toNativeUtf8().cast<ffi.Char>(), 
       negativePrompt?.toNativeUtf8().cast<ffi.Char>() ?? ffi.nullptr, 
-      diffusionParams.clipSkip,
-      diffusionParams.cfgScale, 
-      diffusionParams.guidance, 
-      diffusionParams.eta, 
-      diffusionParams.width, 
-      diffusionParams.height, 
-      diffusionParams.sampleMethod.toNative(), 
-      diffusionParams.samplingSteps,
-      diffusionParams.seed,
-      diffusionParams.nBatch,
+      clipSkip,
+      cfgScale, 
+      guidance, 
+      eta, 
+      width, 
+      height, 
+      sampleMethod.toNative(), 
+      samplingSteps,
+      seed,
+      nBatch,
       controlImage,
-      diffusionParams.controlStrength,
-      diffusionParams.styleStrength,
-      diffusionParams.normalizeInput,
+      controlStrength,
+      styleStrength,
+      normalizeInput,
       contextParams.inputIdImages?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr,
-      diffusionParams.skipLayers.toUint8Pointer(),
-      diffusionParams.skipLayers.length,
-      diffusionParams.slgScale,
-      diffusionParams.skipLayerStart,
-      diffusionParams.skipLayerEnd
+      skipLayers.toUint8Pointer(),
+      skipLayers.length,
+      slgScale,
+      skipLayerStart,
+      skipLayerEnd
     );
 
     final List<Uint8List> results = [];
 
-    for (var i = 0; i < diffusionParams.nBatch; i++) {
+    for (var i = 0; i < nBatch; i++) {
       final image = resultsPtr.ref;
       final bytes = image.data.asTypedList(image.width * image.height * image.channel);
       final rgbaBytes = Uint8List(image.width * image.height * 4);
