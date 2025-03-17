@@ -35,10 +35,10 @@ class StableDiffusionNative {
     _contextFinalizer.attach(this, _context);
   }
 
-  List<File> txt2img(String prompt, [String? negativePrompt]) {
+  List<Uint8List> txt2img(String prompt, [String? negativePrompt]) {
     ffi.Pointer<sd_image_t> controlImage = ffi.nullptr;
 
-    final results = StableDiffusion.lib.txt2img(
+    final resultsPtr = StableDiffusion.lib.txt2img(
       _context, 
       prompt.toNativeUtf8().cast<ffi.Char>(), 
       negativePrompt?.toNativeUtf8().cast<ffi.Char>() ?? ffi.nullptr, 
@@ -64,6 +64,23 @@ class StableDiffusionNative {
       diffusionParams.skipLayerEnd
     );
 
-    return []; // TODO
+    final List<Uint8List> results = [];
+
+    for (var i = 0; i < diffusionParams.nBatch; i++) {
+      final image = resultsPtr.ref;
+      final bytes = image.data.asTypedList(image.width * image.height * image.channel);
+      final rgbaBytes = Uint8List(image.width * image.height * 4);
+
+      for (var i = 0; i < image.width * image.height; i++) {
+        rgbaBytes[i * 4 + 0] = bytes[i * 3 + 0];
+        rgbaBytes[i * 4 + 1] = bytes[i * 3 + 1];
+        rgbaBytes[i * 4 + 2] = bytes[i * 3 + 2];
+        rgbaBytes[i * 4 + 3] = 255;
+      }
+
+      results.add(rgbaBytes);
+    }
+
+    return results;
   }
 }
