@@ -1,12 +1,7 @@
 part of 'package:sdcpp/sdcpp.dart';
 
 class StableDiffusion {
-  static final _contextFinalizer =
-      Finalizer<ffi.Pointer<sd_ctx_t>>(lib.free_sd_ctx);
-  
   ContextParams _contextParams;
-
-  ffi.Pointer<sd_ctx_t> _context = ffi.nullptr;
 
   ContextParams get contextParams => _contextParams;
 
@@ -20,16 +15,7 @@ class StableDiffusion {
     _initContext();
   }
 
-  void _initContext() {
-    if (_context != ffi.nullptr) {
-      lib.free_sd_ctx(_context);
-    }
-
-    _context = _contextParams.toNative();
-    assert(_context != ffi.nullptr, StableDiffusionException('Failed to create context'));
-
-    _contextFinalizer.attach(this, _context);
-  }
+  void _initContext() => lib.stable_diffusion_init(_contextParams.toJson().toNativeUtf8().cast<ffi.Char>());
 
   Future<List<File>> txt2img({
     required String prompt, 
@@ -56,65 +42,47 @@ class StableDiffusion {
     seed ??= math.Random().nextInt(1000000);
     skipLayers ??= Uint8List.fromList([7, 8, 9]);
 
-    final resultsPtr = lib.txt2img(
-      _context, 
-      prompt.toNativeUtf8().cast<ffi.Char>(), 
-      negativePrompt.toNativeUtf8().cast<ffi.Char>(), 
-      clipSkip,
-      cfgScale, 
-      guidance, 
-      eta, 
-      width, 
-      height, 
-      sampleMethod.toNative(), 
-      samplingSteps,
-      seed,
-      nBatch,
-      ffi.nullptr, // Control Image
-      controlStrength,
-      styleStrength,
-      normalizeInput,
-      contextParams.inputIdImages?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr,
-      skipLayers.toUint8Pointer(),
-      skipLayers.length,
-      slgScale,
-      skipLayerStart,
-      skipLayerEnd
-    );
-
     final temp = await getTemporaryDirectory();
+
+    final Map<String, dynamic> params = {
+      'prompt': prompt,
+      'negative_prompt': negativePrompt,
+      'output_path': temp.path,
+      'clip_skip': clipSkip,
+      'cfg_scale': cfgScale,
+      'guidance': guidance,
+      'eta': eta,
+      'width': width,
+      'height': height,
+      'sample_method': sampleMethod.index,
+      'sampling_steps': samplingSteps,
+      'seed': seed,
+      'n_batch': nBatch,
+      'control_strength': controlStrength,
+      'style_strength': styleStrength,
+      'normalize_input': normalizeInput,
+      'style_ratio': styleRatio,
+      'skip_layers': skipLayers,
+      'slg_scale': slgScale,
+      'skip_layer_start': skipLayerStart,
+      'skip_layer_end': skipLayerEnd
+    };
+
+    final input = jsonEncode(params).toNativeUtf8().cast<ffi.Char>();
+
+    final images = lib.stable_diffusion_txt2img(input);
 
     final List<File> results = [];
 
-    for (var i = 0; i < nBatch; i++) {
-      final image = (resultsPtr + i).ref;
-      final bytes = image.data.asTypedList(image.width * image.height * image.channel);
-      final rgbaBytes = Uint8List(image.width * image.height * 4);
+    for (int i = 0; i < nBatch; i++) {
+      final path = (images + i).cast<Utf8>().toDartString();
+      final file = File(path);
 
-      for (var i = 0; i < image.width * image.height; i++) {
-        rgbaBytes[i * 4 + 0] = bytes[i * 3 + 0];
-        rgbaBytes[i * 4 + 1] = bytes[i * 3 + 1];
-        rgbaBytes[i * 4 + 2] = bytes[i * 3 + 2];
-        rgbaBytes[i * 4 + 3] = 255;
-      }
-
-      final hash = sha256.convert(rgbaBytes).bytes;
-      final name = base64Encode(hash).replaceAll('/', '_').replaceAll('+', '-');
-      final file = File('${temp.path}/$name.png');
-      
-      lib.stbi_write_png(
-        file.path.toNativeUtf8().cast<ffi.Char>(),
-        image.width,
-        image.height,
-        image.channel,
-        rgbaBytes.toUint8Pointer() as ffi.Pointer<ffi.Void>,
-        0,
-        prompt.toNativeUtf8().cast<ffi.Char>()
-      );
+      assert(file.existsSync(), StableDiffusionException('Failed to create image'));
 
       results.add(file);
     }
-
+    
     return results;
   }
 }

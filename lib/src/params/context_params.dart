@@ -249,28 +249,59 @@ class ContextParams extends ChangeNotifier{
     assert((_model != null && _model!.existsSync()) || (_diffusionModel != null && _diffusionModel!.existsSync()), StableDiffusionException('Model and diffusion model file does not exist'));
   }
 
-  ffi.Pointer<sd_ctx_t> toNative() => lib.new_sd_ctx(
-    _model?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr, 
-    _clipL?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr, 
-    _clipG?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr, 
-    _t5xxl?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr, 
-    _diffusionModel?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr,
-    _vae?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr,
-    _taesd?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr, 
-    _controlnet?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr, 
-    _loraModel?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr, 
-    _embeddings?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr, 
-    _stackedIdEmbeddings?.path.toNativeUtf8().cast<ffi.Char>() ?? emptyStringPtr, 
-    _vaeDecodeOnly, 
-    _vaeTiling, 
-    _freeParamsImmediately, 
-    _nThreads, 
-    _wType.toNative(), 
-    rng_type_t.STD_DEFAULT_RNG, // CUDA RNG not supported
-    _sType.toNative(), 
-    _keepClipOnCpu, 
-    _keepControlNetCpu, 
-    _keepVaeOnCpu, 
-    _diffusionFlashAttn
-  );
+  factory ContextParams.fromMap(Map<String, dynamic> map) {
+    return ContextParams(
+      model: map['model_path'] != null ? File(map['model_path']) : null,
+      clipL: map['clip_l_path'] != null ? File(map['clip_l_path']) : null,
+      clipG: map['clip_g_path'] != null ? File(map['clip_g_path']) : null,
+      t5xxl: map['t5xxl_path'] != null ? File(map['t5xxl_path']) : null,
+      diffusionModel: map['diffusion_model_path'] != null ? File(map['diffusion_model_path']) : null,
+      vae: map['vae_path'] != null ? File(map['vae_path']) : null,
+      taesd: map['taesd_path'] != null ? File(map['taesd_path']) : null,
+      controlnet: map['control_net_path'] != null ? File(map['control_net_path']) : null,
+      loraModel: map['lora_model_path'] != null ? File(map['lora_model_path']) : null,
+      embeddings: map['embeddings_path'] != null ? File(map['embeddings_path']) : null,
+      stackedIdEmbeddings: map['id_embeddings_path'] != null ? File(map['id_embeddings_path']) : null,
+      inputIdImages: map['input_id_images_path'] != null ? File(map['input_id_images_path']) : null,
+      vaeDecodeOnly: map['vae_decode_only'] ?? false,
+      vaeTiling: map['vae_tiling'] ?? false,
+      freeParamsImmediately: map['free_params_immediately'] ?? false,
+      nThreads: map['n_threads'] ?? -1,
+      wType: map['w_type'] != null ? StableDiffusionType.values[map['w_type']] : StableDiffusionType.count,
+      sType: map['s_type'] != null ? ScheduleType.values[map['s_type']] : ScheduleType.defaultSchedule,
+      keepClipOnCpu: map['clip_on_cpu'] ?? false,
+      keepControlNetCpu: map['control_net_on_cpu'] ?? false,
+      keepVaeOnCpu: map['vae_on_cpu'] ?? false,
+      diffusionFlashAttn: map['diffusion_flash_attn'] ?? false
+    );
+  }
+
+  factory ContextParams.fromJson(String source) => ContextParams.fromMap(jsonDecode(source));
+
+  Map<String, dynamic> toMap() => {
+    'model_path': _model?.path,
+    'clip_l_path': _clipL?.path,
+    'clip_g_path': _clipG?.path,
+    't5xxl_path': _t5xxl?.path,
+    'diffusion_model_path': _diffusionModel?.path,
+    'vae_path': _vae?.path,
+    'taesd_path': _taesd?.path,
+    'control_net_path': _controlnet?.path,
+    'lora_model_path': _loraModel?.path,
+    'embeddings_path': _embeddings?.path,
+    'id_embeddings_path': _stackedIdEmbeddings?.path,
+    'input_id_images_path': _inputIdImages?.path,
+    'vae_decode_only': _vaeDecodeOnly,
+    'vae_tiling': _vaeTiling,
+    'free_params_immediately': _freeParamsImmediately,
+    'n_threads': _nThreads,
+    'w_type': _wType.index,
+    's_type': _sType.index,
+    'clip_on_cpu': _keepClipOnCpu,
+    'control_net_on_cpu': _keepControlNetCpu,
+    'vae_on_cpu': _keepVaeOnCpu,
+    'diffusion_flash_attn': _diffusionFlashAttn
+  };
+
+  String toJson() => jsonEncode(toMap());
 }

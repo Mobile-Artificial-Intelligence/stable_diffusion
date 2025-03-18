@@ -21,8 +21,8 @@ A new Flutter FFI plugin project.
     set -u
     set -o pipefail
 
-    SOURCE_DIR="../src/stable_diffusion"
-    TARGET_DIR="./stable_diffusion"
+    SOURCE_DIR="../src"
+    TARGET_DIR="./src"
 
     # Ensure source directory exists
     if [ ! -d "$SOURCE_DIR" ]; then
@@ -43,37 +43,64 @@ A new Flutter FFI plugin project.
     echo "Copy completed successfully."
   CMD
 
-  s.source           = { :path => '.' }
-  s.source_files = 'stable_diffusion/*.cpp',
-                   'stable_diffusion/thirdparty/*.c',
-                   'stable_diffusion/ggml/src/*.c',
-                   'stable_diffusion/ggml/src/*.cpp',
-                   'stable_diffusion/ggml/src/ggml-cpu/*.c',
-                   'stable_diffusion/ggml/src/ggml-cpu/*.cpp',
-                   'stable_diffusion/ggml/src/ggml-metal/*.m',
+  s.source = { :path => '.' }
+  s.source_files = 'src/api.cpp',
+                   'src/stable_diffusion/*.cpp',
+                   'src/stable_diffusion/thirdparty/*.c',
+                   'src/stable_diffusion/ggml/src/*.c',
+                   'src/stable_diffusion/ggml/src/*.cpp',
+                   'src/stable_diffusion/ggml/src/ggml-cpu/*.c',
+                   'src/stable_diffusion/ggml/src/ggml-cpu/*.cpp',
+                   'src/stable_diffusion/ggml/src/ggml-metal/*.m',
 
   s.frameworks = 'Foundation', 'Metal', 'MetalKit'
   s.platform = :osx, '10.15'
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
     'USER_HEADER_SEARCH_PATHS' => [
-      '$(PODS_TARGET_SRCROOT)/stable_diffusion/',
-      '$(PODS_TARGET_SRCROOT)/stable_diffusion/thirdparty',
-      '$(PODS_TARGET_SRCROOT)/stable_diffusion/ggml/include',
-      '$(PODS_TARGET_SRCROOT)/stable_diffusion/ggml/src',
-      '$(PODS_TARGET_SRCROOT)/stable_diffusion/ggml/src/ggml-cpu',
-      '$(PODS_TARGET_SRCROOT)/stable_diffusion/ggml/src/ggml-metal',
+      '$(PODS_TARGET_SRCROOT)/src/',
+      '$(PODS_TARGET_SRCROOT)/src/stable_diffusion/',
+      '$(PODS_TARGET_SRCROOT)/src/stable_diffusion/thirdparty',
+      '$(PODS_TARGET_SRCROOT)/src/stable_diffusion/ggml/include',
+      '$(PODS_TARGET_SRCROOT)/src/stable_diffusion/ggml/src',
+      '$(PODS_TARGET_SRCROOT)/src/stable_diffusion/ggml/src/ggml-cpu',
+      '$(PODS_TARGET_SRCROOT)/src/stable_diffusion/ggml/src/ggml-metal',
     ],
     'HEADER_SEARCH_PATHS' => [
-      '$(PODS_TARGET_SRCROOT)/stable_diffusion/',
-      '$(PODS_TARGET_SRCROOT)/stable_diffusion/thirdparty',
-      '$(PODS_TARGET_SRCROOT)/stable_diffusion/ggml/include',
-      '$(PODS_TARGET_SRCROOT)/stable_diffusion/ggml/src',
-      '$(PODS_TARGET_SRCROOT)/stable_diffusion/ggml/src/ggml-cpu',
-      '$(PODS_TARGET_SRCROOT)/stable_diffusion/ggml/src/ggml-metal',
+      '$(PODS_TARGET_SRCROOT)/src/',
+      '$(PODS_TARGET_SRCROOT)/src/stable_diffusion/',
+      '$(PODS_TARGET_SRCROOT)/src/stable_diffusion/thirdparty',
+      '$(PODS_TARGET_SRCROOT)/src/stable_diffusion/ggml/include',
+      '$(PODS_TARGET_SRCROOT)/src/stable_diffusion/ggml/src',
+      '$(PODS_TARGET_SRCROOT)/src/stable_diffusion/ggml/src/ggml-cpu',
+      '$(PODS_TARGET_SRCROOT)/src/stable_diffusion/ggml/src/ggml-metal',
     ],
-    'OTHER_CFLAGS' => ['$(inherited)', '-O3', '-flto', '-fno-objc-arc', '-w', '-I$(PODS_TARGET_SRCROOT)/stable_diffusion', '-I$(PODS_TARGET_SRCROOT)/stable_diffusion/ggml/include', '-DGGML_LLAMAFILE=OFF', '-DGGML_USE_CPU'],
-    'OTHER_CPLUSPLUSFLAGS' => ['$(inherited)', '-O3', '-flto', '-fno-objc-arc', '-w', '-std=c++17', '-fpermissive', '-I$(PODS_TARGET_SRCROOT)/stable_diffusion', '-I$(PODS_TARGET_SRCROOT)/stable_diffusion/ggml/include', '-DGGML_LLAMAFILE=OFF', '-DGGML_USE_CPU'],
+    'OTHER_CFLAGS' => [
+      '$(inherited)', 
+      '-O3', 
+      '-flto', 
+      '-fno-objc-arc', 
+      '-w', 
+      '-I$(PODS_TARGET_SRCROOT)/src', 
+      '-I$(PODS_TARGET_SRCROOT)/src/stable_diffusion', 
+      '-I$(PODS_TARGET_SRCROOT)/src/stable_diffusion/ggml/include', 
+      '-DGGML_LLAMAFILE=OFF', 
+      '-DGGML_USE_CPU'
+    ],
+    'OTHER_CPLUSPLUSFLAGS' => [
+      '$(inherited)', 
+      '-O3', 
+      '-flto', 
+      '-fno-objc-arc', 
+      '-w', 
+      '-std=c++17', 
+      '-fpermissive', 
+      '-I$(PODS_TARGET_SRCROOT)/src', 
+      '-I$(PODS_TARGET_SRCROOT)/stable_diffusion', 
+      '-I$(PODS_TARGET_SRCROOT)/stable_diffusion/ggml/include', 
+      '-DGGML_LLAMAFILE=OFF', 
+      '-DGGML_USE_CPU'
+    ],
     'GCC_PREPROCESSOR_DEFINITIONS' => ['$(inherited)', 'GGML_USE_METAL=1'],
   }
 end

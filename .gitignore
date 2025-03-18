@@ -32,5 +32,5 @@ migrate_working_dir/
 .flutter-plugins-dependencies
 build/
 
-macos/stable_diffusions
-ios/stable_diffusion
+macos/src
+ios/src
