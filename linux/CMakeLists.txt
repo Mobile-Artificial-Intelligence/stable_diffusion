@@ -34,6 +34,6 @@ set_target_properties(
 set(sdcpp_bundled_libraries
   # Defined in ../src/CMakeLists.txt.
   # This can be changed to accommodate different builds.
-  $<TARGET_FILE:sdcpp>
+  $<TARGET_FILE:stable-diffusion>
   PARENT_SCOPE
 )
