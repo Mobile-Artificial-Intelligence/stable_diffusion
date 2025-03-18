@@ -1,6 +1,8 @@
-import 'package:flutter/material.dart';
-import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:sdcpp/sdcpp.dart';
 
 void main() {
@@ -17,50 +19,115 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final TextEditingController controller = TextEditingController();
   StableDiffusion? sd;
+  String? modelPath;
+  List<Uint8List> results = [];
+  bool busy = false;
+
+  void loadModel() async {
+    final result = await FilePicker.platform.pickFiles(
+        dialogTitle: "Load Model File",
+        type: FileType.any,
+        allowMultiple: false,
+        allowCompression: false);
+
+    if (result == null ||
+        result.files.isEmpty ||
+        result.files.single.path == null) {
+      throw Exception('No file selected');
+    }
+
+    File resultFile = File(result.files.single.path!);
+
+    final exists = await resultFile.exists();
+    if (!exists) {
+      throw Exception('File does not exist');
+    }
+
+    sd = StableDiffusion(ContextParams(
+      model: resultFile,
+    ));
+
+    setState(() {
+      modelPath = resultFile.path;
+    });
+  }
+
+  void onSubmit(String value) {
+    if (sd == null) {
+      throw Exception('Model not loaded');
+    }
+
+    setState(() {
+      busy = true;
+      controller.clear();
+    });
+
+    results = sd!.txt2img(prompt: value);
+
+    setState(() {
+      busy = false;
+    });
+
+    print(results.length);
+  }
 
   @override
   Widget build(BuildContext context) {
-    const textStyle = TextStyle(fontSize: 25);
-    const spacerSmall = SizedBox(height: 10);
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Native Packages'),
-        ),
-        body: SingleChildScrollView(
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              children: [
-                const Text(
-                  'This calls a native function through FFI that is shipped as source in the package. '
-                  'The native code is built as part of the Flutter Runner build.',
-                  style: textStyle,
-                  textAlign: TextAlign.center,
-                ),
-                spacerSmall,
-                Text(
-                  'sum(1, 2) = $sumResult',
-                  style: textStyle,
-                  textAlign: TextAlign.center,
-                ),
-                spacerSmall,
-                FutureBuilder<int>(
-                  future: sumAsyncResult,
-                  builder: (BuildContext context, AsyncSnapshot<int> value) {
-                    final displayValue =
-                        (value.hasData) ? value.data : 'loading';
-                    return Text(
-                      'await sumAsync(3, 4) = $displayValue',
-                      style: textStyle,
-                      textAlign: TextAlign.center,
-                    );
-                  },
-                ),
-              ],
-            ),
+    return MaterialApp(home: buildHome());
+  }
+
+  Widget buildHome() {
+    return Scaffold(
+      appBar: buildAppBar(),
+      body: buildBody(),
+    );
+  }
+
+  PreferredSizeWidget buildAppBar() {
+    return AppBar(
+        title: Text(modelPath ?? 'No model loaded'),
+        leading: IconButton(
+          icon: const Icon(Icons.folder_open),
+          onPressed: loadModel,
+        ));
+  }
+
+  Widget buildBody() {
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            itemCount: results.length,
+            itemBuilder: (context, index) {
+              return Image.memory(results[index]);
+            },
           ),
         ),
+        buildInputField(),
+      ],
+    );
+  }
+
+  Widget buildInputField() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: controller,
+              onSubmitted: onSubmit,
+              decoration: const InputDecoration(
+                labelText: 'Enter your message',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.send),
+            onPressed: () => onSubmit(controller.text),
+          )
+        ],
       ),
     );
   }
