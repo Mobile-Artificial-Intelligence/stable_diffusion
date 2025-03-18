@@ -3,7 +3,8 @@ description: "A flutter package for stable diffusion inference"
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.3.1 <4.0.0'
+  sdk: '>=3.3.0 <4.0.0'
+  flutter: '>=3.3.0'
 
 dependencies:
   ffi: ^2.1.3
