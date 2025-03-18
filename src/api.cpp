@@ -15,6 +15,8 @@
 #include "stb_image_resize.h"
 
 #include <random>
+#include <string>
+#include <vector>
 
 using json = nlohmann::ordered_json;
 
@@ -23,67 +25,67 @@ static sd_ctx_t * ctx = nullptr;
 int stable_diffusion_init(char * params) {
     json json_params = json::parse(params);
 
-    std::string model_path = '';
+    std::string model_path = "";
 
     if (json_params.contains("model_path") && json_params["model_path"].is_string()) {
         model_path = json_params["model_path"].get<std::string>();
     }
 
-    std::string clip_l_path = '';
+    std::string clip_l_path = "";
 
     if (json_params.contains("clip_l_path") && json_params["clip_l_path"].is_string()) {
         clip_l_path = json_params["clip_l_path"].get<std::string>();
     }
 
-    std::string clip_g_path = '';
+    std::string clip_g_path = "";
 
     if (json_params.contains("clip_g_path") && json_params["clip_g_path"].is_string()) {
         clip_g_path = json_params["clip_g_path"].get<std::string>();
     }
 
-    std::string t5xxl_path = '';
+    std::string t5xxl_path = "";
 
     if (json_params.contains("t5xxl_path") && json_params["t5xxl_path"].is_string()) {
         t5xxl_path = json_params["t5xxl_path"].get<std::string>();
     }
 
-    std::string diffusion_model_path = '';
+    std::string diffusion_model_path = "";
 
     if (json_params.contains("diffusion_model_path") && json_params["diffusion_model_path"].is_string()) {
         diffusion_model_path = json_params["diffusion_model_path"].get<std::string>();
     }
 
-    std::string vae_path = '';
+    std::string vae_path = "";
 
     if (json_params.contains("vae_path") && json_params["vae_path"].is_string()) {
         vae_path = json_params["vae_path"].get<std::string>();
     }
 
-    std::string taesd_path = '';
+    std::string taesd_path = "";
 
     if (json_params.contains("taesd_path") && json_params["taesd_path"].is_string()) {
         taesd_path = json_params["taesd_path"].get<std::string>();
     }
 
-    std::string control_net_path = '';
+    std::string control_net_path = "";
 
     if (json_params.contains("control_net_path") && json_params["control_net_path"].is_string()) {
         control_net_path = json_params["control_net_path"].get<std::string>();
     }
 
-    std::string lora_model_path = '';
+    std::string lora_model_path = "";
 
     if (json_params.contains("lora_model_path") && json_params["lora_model_path"].is_string()) {
         lora_model_path = json_params["lora_model_path"].get<std::string>();
     }
 
-    std::string embeddings_path = '';
+    std::string embeddings_path = "";
 
     if (json_params.contains("embeddings_path") && json_params["embeddings_path"].is_string()) {
         embeddings_path = json_params["embeddings_path"].get<std::string>();
     }
 
-    std::string id_embeddings_path = '';
+    std::string id_embeddings_path = "";
 
     if (json_params.contains("id_embeddings_path") && json_params["id_embeddings_path"].is_string()) {
         id_embeddings_path = json_params["id_embeddings_path"].get<std::string>();
@@ -183,7 +185,7 @@ char ** stable_diffusion_txt2img(char * params) {
     std::string prompt = json_params["prompt"].get<std::string>();
     std::string output_path = json_params["output_path"].get<std::string>();
 
-    std::string negative_prompt = '';
+    std::string negative_prompt = "";
 
     if (json_params.contains("negative_prompt") && json_params["negative_prompt"].is_string()) {
         negative_prompt = json_params["negative_prompt"].get<std::string>();
@@ -276,13 +278,13 @@ char ** stable_diffusion_txt2img(char * params) {
         style_ratio = json_params["style_ratio"];
     }
 
-    std::vector<int> skip_layers = [7, 8, 9];
+    std::vector<int> skip_layers = {7, 8, 9};
 
     if (json_params.contains("skip_layers") && json_params["skip_layers"].is_array()) {
         skip_layers.clear();
 
-        for (int & skip_layer : json_params["skip_layers"]) {
-            skip_layers.push_back(skip_layer);
+        for (const auto &elem : json_params["skip_layers"]) {
+            skip_layers.push_back(elem.get<int>());
         }
     }
 
@@ -318,10 +320,11 @@ char ** stable_diffusion_txt2img(char * params) {
         sample_steps,
         seed,
         n_batch,
+        nullptr,
         control_strength,
-        style_strength,
-        normalize_input,
         style_ratio,
+        normalize_input,
+        nullptr,
         skip_layers.data(),
         skip_layers.size(),
         slg_scale,
@@ -329,19 +332,25 @@ char ** stable_diffusion_txt2img(char * params) {
         skip_layer_end
     );
 
-    std::vector<char *> image_paths;
+    std::vector<std:string> image_paths;
 
     for (int i = 0; i < images.size(); i++) {
         std::string image_path = output_path + '/' + std::to_string(i) + ".png";
 
         stbi_write_png(image_path.c_str(), images[i].width, images[i].height, images[i].channel, images[i].data(), 0, prompt.c_str());
 
-        image_paths.push_back(image_path.c_str());
+        image_paths.push_back(image_path);
 
         free(images[i].data());
     }
 
-    return image_paths.data();
+    char **ret = new char*[image_paths.size()];
+
+    for (size_t i = 0; i < image_paths.size(); i++) {
+        ret[i] = strdup(image_paths[i].c_str());
+    }
+
+    return ret;
 }
 
 void stable_diffusion_free(void) {
