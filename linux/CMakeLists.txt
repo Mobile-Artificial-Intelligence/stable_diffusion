@@ -11,7 +11,7 @@ set(API_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../src)
 set(STABLE_DIFFUSION_CPP_DIR ${API_DIR}/stable_diffusion)
 
 # Build the shared libs
-set(SD_BUILD_SHARED_LIBS ON)
+set(SD_BUILD_SHARED_LIBS ON CACHE BOOL "Build shared libraries" FORCE)
 set(CMAKE_INSTALL_LIBDIR lib CACHE PATH "library install dir" FORCE)
 
 # Invoke the build for native code shared with the other target platforms.
