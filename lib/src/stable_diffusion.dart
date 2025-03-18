@@ -31,7 +31,7 @@ class StableDiffusion {
     _contextFinalizer.attach(this, _context);
   }
 
-  List<Uint8List> txt2img({
+  Future<List<File>> txt2img({
     required String prompt, 
     String negativePrompt = '', 
     int clipSkip = -1,
@@ -52,7 +52,7 @@ class StableDiffusion {
     double slgScale = 0.0,
     double skipLayerStart = 0.01,
     double skipLayerEnd = 0.2
-  }) {
+  }) async {
     seed ??= math.Random().nextInt(1000000);
     skipLayers ??= Uint8List.fromList([7, 8, 9]);
 
@@ -82,10 +82,12 @@ class StableDiffusion {
       skipLayerEnd
     );
 
-    final List<Uint8List> results = [];
+    final temp = await getTemporaryDirectory();
+
+    final List<File> results = [];
 
     for (var i = 0; i < nBatch; i++) {
-      final image = resultsPtr.ref;
+      final image = (resultsPtr + i).ref;
       final bytes = image.data.asTypedList(image.width * image.height * image.channel);
       final rgbaBytes = Uint8List(image.width * image.height * 4);
 
@@ -96,7 +98,21 @@ class StableDiffusion {
         rgbaBytes[i * 4 + 3] = 255;
       }
 
-      results.add(rgbaBytes);
+      final hash = sha256.convert(rgbaBytes).bytes;
+      final name = base64Encode(hash).replaceAll('/', '_').replaceAll('+', '-');
+      final file = File('${temp.path}/$name.png');
+      
+      lib.stbi_write_png(
+        file.path.toNativeUtf8().cast<ffi.Char>(),
+        image.width,
+        image.height,
+        image.channel,
+        rgbaBytes.toUint8Pointer() as ffi.Pointer<ffi.Void>,
+        0,
+        prompt.toNativeUtf8().cast<ffi.Char>()
+      );
+
+      results.add(file);
     }
 
     return results;

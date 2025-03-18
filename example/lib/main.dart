@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -20,7 +19,7 @@ class _MyAppState extends State<MyApp> {
   final TextEditingController controller = TextEditingController();
   StableDiffusion? sd;
   String? modelPath;
-  List<Uint8List> results = [];
+  List<File> results = [];
   bool busy = false;
 
   void loadModel() async {
@@ -52,7 +51,7 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  void onSubmit(String value) {
+  void onSubmit(String value) async {
     if (sd == null) {
       throw Exception('Model not loaded');
     }
@@ -62,7 +61,7 @@ class _MyAppState extends State<MyApp> {
       controller.clear();
     });
 
-    results = sd!.txt2img(prompt: value);
+    results = await sd!.txt2img(prompt: value);
 
     setState(() {
       busy = false;
@@ -99,7 +98,7 @@ class _MyAppState extends State<MyApp> {
           child: ListView.builder(
             itemCount: results.length,
             itemBuilder: (context, index) {
-              return Image.memory(results[index]);
+              return Image.file(results[index]);
             },
           ),
         ),
