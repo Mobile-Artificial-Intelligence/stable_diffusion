@@ -112,4 +112,25 @@ A new Flutter FFI plugin project.
       'GGML_USE_METAL=1',
     ],
   }
+  s.script_phases = [
+    {
+      :name => 'Build Metal Library',
+      :input_files => ["${PODS_TARGET_SRCROOT}/src/stable_diffusion/ggml/src/ggml-metal/*.metal"],
+      :output_files => ["${METAL_LIBRARY_OUTPUT_DIR}/default.metallib"],
+      :execution_position => :after_compile,
+      :script => <<-SCRIPT
+        set -e
+        set -u
+        set -o pipefail
+        cd "${PODS_TARGET_SRCROOT}/src/stable_diffusion"
+        xcrun metal \
+          -I"${PODS_TARGET_SRCROOT}/src/stable_diffusion/ggml/src" \
+          -target "air64-${LLVM_TARGET_TRIPLE_VENDOR}-${LLVM_TARGET_TRIPLE_OS_VERSION}${LLVM_TARGET_TRIPLE_SUFFIX:-}" \
+          -ffast-math \
+          -std=ios-metal2.3 \
+          -o "${METAL_LIBRARY_OUTPUT_DIR}/default.metallib" \
+          ggml/src/ggml-metal/*.metal
+      SCRIPT
+    }
+  ]
 end
