@@ -174,3 +174,7 @@ int stable_diffusion_init(char * params) {
 
     return 0;
 }
+
+void stable_diffusion_free(void) {
+    free_sd_ctx(ctx);
+}

@@ -15,7 +15,7 @@ SD_DART_API int stable_diffusion_init(char * params);
 
 SD_DART_API int stable_diffusion_txt2img(char * prompt, char * negative_prompt, char * params);
 
-SD_DART_API void stable_diffusion_free();
+SD_DART_API void stable_diffusion_free(void);
 
 #ifdef __cplusplus
 }
