@@ -1,0 +1,44 @@
+name: Build Linux
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/build-linux.yml'
+      - 'linux/**'
+      - 'lib/**'
+      - 'example/linux/**'
+      - 'example/lib/**'
+      - 'pubspec.yaml'
+  workflow_run:
+    workflows: ["Update Submodules Daily"]
+    types:
+      - completed
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.27.3'
+
+      - name: Build Linux App
+        run: |
+          cd example
+          flutter pub get
+          flutter build linux -v
+
+      - name: Upload Linux Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdcpp-example-linux
+          path: example/build/linux/x64/release/bundle
