@@ -10,6 +10,10 @@ project(${PROJECT_NAME} LANGUAGES CXX)
 set(API_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../src)
 set(STABLE_DIFFUSION_CPP_DIR ${API_DIR}/stable_diffusion)
 
+# Build the shared libs
+set(BUILD_SHARED_LIBS ON)
+set(CMAKE_INSTALL_LIBDIR lib CACHE PATH "library install dir" FORCE)
+
 # Invoke the build for native code shared with the other target platforms.
 # This can be changed to accommodate different builds.
 add_subdirectory("${STABLE_DIFFUSION_CPP_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/shared")
