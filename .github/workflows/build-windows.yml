@@ -1,0 +1,48 @@
+name: Build Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/build-windows.yml'
+      - 'windows/**'
+      - 'lib/**'
+      - 'example/windows/**'
+      - 'example/lib/**'
+      - 'pubspec.yaml'
+  workflow_run:
+    workflows: ["Update Submodules Daily"]
+    types:
+      - completed
+
+jobs:        
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.0'
+        
+      - name: Install dependencies
+        run: |
+          choco install -y cmake ninja
+
+      - name: Build Windows App
+        run: |
+          cd example
+          flutter pub get
+          flutter build windows -v
+
+      - name: Upload Windows Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdcpp-example-windows
+          path: example/build/windows/x64/bundle
