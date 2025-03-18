@@ -75,11 +75,10 @@ class StableDiffusion {
     final List<File> results = [];
 
     for (int i = 0; i < nBatch; i++) {
-      final path = (images + i).cast<Utf8>().toDartString();
+      final path = (images + i).value.cast<Utf8>().toDartString();
+
       final file = File(path);
-
       assert(file.existsSync(), StableDiffusionException('Failed to create image'));
-
       results.add(file);
     }
     

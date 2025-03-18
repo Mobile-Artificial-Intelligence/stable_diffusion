@@ -53,7 +53,7 @@ A new Flutter FFI plugin project.
                    'src/stable_diffusion/ggml/src/ggml-cpu/*.cpp',
                    'src/stable_diffusion/ggml/src/ggml-metal/*.m',
 
-  s.frameworks = 'Foundation', 'Metal', 'MetalKit'
+  s.frameworks = 'Accelerate', 'Foundation', 'Metal', 'MetalKit'
   s.platform = :osx, '10.15'
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
@@ -85,7 +85,9 @@ A new Flutter FFI plugin project.
       '-I$(PODS_TARGET_SRCROOT)/src/stable_diffusion', 
       '-I$(PODS_TARGET_SRCROOT)/src/stable_diffusion/ggml/include', 
       '-DGGML_LLAMAFILE=OFF', 
-      '-DGGML_USE_CPU'
+      '-DGGML_USE_CPU',
+      '-DGGML_USE_ACCELERATE',
+      '-DGGML_USE_METAL',
     ],
     'OTHER_CPLUSPLUSFLAGS' => [
       '$(inherited)', 
@@ -99,8 +101,15 @@ A new Flutter FFI plugin project.
       '-I$(PODS_TARGET_SRCROOT)/stable_diffusion', 
       '-I$(PODS_TARGET_SRCROOT)/stable_diffusion/ggml/include', 
       '-DGGML_LLAMAFILE=OFF', 
-      '-DGGML_USE_CPU'
+      '-DGGML_USE_CPU',
+      '-DGGML_USE_ACCELERATE',
+      '-DGGML_USE_METAL',
     ],
-    'GCC_PREPROCESSOR_DEFINITIONS' => ['$(inherited)', 'GGML_USE_METAL=1'],
+    'GCC_PREPROCESSOR_DEFINITIONS' => [
+      '$(inherited)', 
+      'GGML_USE_CPU=1',
+      'GGML_USE_ACCELERATE=1',
+      'GGML_USE_METAL=1',
+    ],
   }
 end
