@@ -33,7 +33,7 @@ class StableDiffusion {
 
   List<Uint8List> txt2img({
     required String prompt, 
-    String? negativePrompt, 
+    String negativePrompt = '', 
     int clipSkip = -1,
     double cfgScale = 7.0,
     double guidance = 3.5,
@@ -59,7 +59,7 @@ class StableDiffusion {
     final resultsPtr = lib.txt2img(
       _context, 
       prompt.toNativeUtf8().cast<ffi.Char>(), 
-      negativePrompt?.toNativeUtf8().cast<ffi.Char>() ?? ffi.nullptr, 
+      negativePrompt.toNativeUtf8().cast<ffi.Char>(), 
       clipSkip,
       cfgScale, 
       guidance, 
