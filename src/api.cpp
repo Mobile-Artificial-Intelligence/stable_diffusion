@@ -278,6 +278,12 @@ char ** stable_diffusion_txt2img(char * params) {
         style_ratio = json_params["style_ratio"];
     }
 
+    std::string input_id_images_path = "";
+
+    if (json_params.contains("input_id_images_path") && json_params["input_id_images_path"].is_string()) {
+        input_id_images_path = json_params["input_id_images_path"].get<std::string>();
+    }
+
     std::vector<int> skip_layers = {7, 8, 9};
 
     if (json_params.contains("skip_layers") && json_params["skip_layers"].is_array()) {
@@ -324,7 +330,7 @@ char ** stable_diffusion_txt2img(char * params) {
         control_strength,
         style_ratio,
         normalize_input,
-        nullptr,
+        input_id_images_path.c_str(),
         skip_layers.data(),
         skip_layers.size(),
         slg_scale,
