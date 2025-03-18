@@ -332,16 +332,14 @@ char ** stable_diffusion_txt2img(char * params) {
         skip_layer_end
     );
 
-    std::vector<std:string> image_paths;
+    std::vector<std::string> image_paths;
 
-    for (int i = 0; i < images.size(); i++) {
+    for (int i = 0; i < n_batch; i++) {
         std::string image_path = output_path + '/' + std::to_string(i) + ".png";
 
-        stbi_write_png(image_path.c_str(), images[i].width, images[i].height, images[i].channel, images[i].data(), 0, prompt.c_str());
+        stbi_write_png(image_path.c_str(), images[i].width, images[i].height, images[i].channel, images[i].data, 0, prompt.c_str());
 
         image_paths.push_back(image_path);
-
-        free(images[i].data());
     }
 
     char **ret = new char*[image_paths.size()];
