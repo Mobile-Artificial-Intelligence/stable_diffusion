@@ -63,11 +63,7 @@ class _MyAppState extends State<MyApp> {
 
     results = await sd!.txt2img(prompt: value);
 
-    setState(() {
-      busy = false;
-    });
-
-    print(results.length);
+    setState(() => busy = false);
   }
 
   @override
