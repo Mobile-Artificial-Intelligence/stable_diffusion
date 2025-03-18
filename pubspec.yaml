@@ -1,5 +1,6 @@
 name: sdcpp
 description: "A flutter package for stable diffusion inference"
+version: 1.0.0+1
 
 environment:
   sdk: '>=3.3.1 <4.0.0'
