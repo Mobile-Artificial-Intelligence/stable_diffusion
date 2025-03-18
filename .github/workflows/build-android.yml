@@ -41,7 +41,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.2'
+          flutter-version: '3.27.3'
 
       - name: Decode Keystore File
         run: echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 --decode > example/android/app/key.jks

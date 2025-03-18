@@ -1,0 +1,36 @@
+name: Update Submodules Daily
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs daily at midnight UTC
+  workflow_dispatch:  # Allows manual triggering
+
+permissions:
+  contents: write 
+
+jobs:
+  update-submodules:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository with Submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Update Submodules
+        run: |
+          git submodule foreach --recursive 'git config submodule.$name.update none'
+          git submodule update --remote
+          git add .
+          
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Submodules updated, committing changes..."
+            git config --global user.name "github-actions[bot]"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            git commit -m "Update llama.cpp"
+            git push origin HEAD
+          else
+            echo "No updates found."
+          fi
+  
