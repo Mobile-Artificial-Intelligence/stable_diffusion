@@ -7,9 +7,26 @@ cmake_minimum_required(VERSION 3.10)
 set(PROJECT_NAME "sdcpp")
 project(${PROJECT_NAME} LANGUAGES CXX)
 
+set(API_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../src)
+set(STABLE_DIFFUSION_CPP_DIR ${API_DIR}/stable_diffusion)
+
 # Invoke the build for native code shared with the other target platforms.
 # This can be changed to accommodate different builds.
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../src" "${CMAKE_CURRENT_BINARY_DIR}/shared")
+add_subdirectory("${STABLE_DIFFUSION_CPP_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/shared")
+
+target_sources(
+  stable-diffusion
+  PRIVATE
+  ${API_DIR}/api.cpp
+)
+
+set_target_properties(
+  stable-diffusion 
+  PROPERTIES
+  PUBLIC_HEADER ${API_DIR}/api.h
+  BUILD_WITH_INSTALL_RPATH TRUE
+  INSTALL_RPATH "$ORIGIN"
+)
 
 # List of absolute paths to libraries that should be bundled with the plugin.
 # This list could contain prebuilt libraries, or libraries created by an
